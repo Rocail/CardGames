@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 
 namespace ServerApplication
 {
-    class Pool
+    public class Pool
     {
         private readonly List<Connection> connections = new List<Connection>();
-        const int MAX_SIZE = 4;
+        public const int MAX_SIZE = 1;
+
         public int AddConnection(Connection connection)
         {
             Console.WriteLine("Connection added : " + connection.ToString());

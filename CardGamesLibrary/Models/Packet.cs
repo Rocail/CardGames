@@ -4,18 +4,13 @@ using ProtoBuf;
 
 namespace CardGamesLibrary.Models.NetworkPacket
 {
-    public class NetworkPacket {
-        public string game = "belote";
-    }
 
     public static class NetworkPacketHeader
     {
         public const string SET_TURN = "SET_TURN";
-        public const string BID = "BID";
-        public const string PASS = "PASS";
+        public const string ROUND_START = "ROUND_START";
+        public const string SEND_CARDS = "SEND_CARDS";
+        public const string CARDS_PLAYED = "CARDS_PLAYED";
         public const string END = "END";
-        public const string UPDATE = "UPDATE";
-        public const string SEND_CARD = "SEND_CARD";
-        public const string SCORE = "SCORE";
     }
 }

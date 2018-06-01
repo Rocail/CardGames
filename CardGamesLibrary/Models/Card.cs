@@ -4,78 +4,39 @@ namespace CardGamesLibrary.Models.Card
 {
     public class CardModel
     {
-        public int rank;        // CardRank
-        public int color;       // CardColor
-        public int value;
-        public bool playable;
-
-        protected CardModel() { }
-
-        public CardModel(int rank, int color, int value, bool playable)
-        {
-            this.rank = rank;
-            this.color = color;
-            this.value = value;
-            this.playable = playable;
-        }
-
+        public CardRank Rank { get; set; }
+        public CardColor Color { get; set; }
+        
         override public string ToString()
         {
             string message = "";
-            switch(this.rank)
-            {
-                case CardRank.Ace:
-                    message += "Ace";
-                    break;
-                case CardRank.Jack:
-                    message += "Jack";
-                    break;
-                case CardRank.Queen:
-                    message += "Queen";
-                    break;
-                case CardRank.King:
-                    message += "King";
-                    break;
-                default:
-                    message += this.rank;
-                    break;
-            }
-            message += " of ";
-            switch(this.color)
-            {
-                case CardColor.Spades:
-                    message += "spades";
-                    break;
-                case CardColor.Hearts:
-                    message += "hearts";
-                    break;
-                case CardColor.Diamonds:
-                    message += "diamonds";
-                    break;
-                case CardColor.Clubs:
-                    message += "clubs";
-                    break;
-                default:
-                    message += "spoke";
-                    break;
-            }
+            message = Rank + " of " + Color;
             return(message);
         }
     }
 
-    public static class CardRank
+    public enum CardRank
     {
-        public const int Ace = 1;
-        public const int Jack = 11;
-        public const int Queen = 12;
-        public const int King = 13;
+         Ace = 14,
+         Two = 15,
+         Three = 3,
+         Four = 4,
+         Five = 5,
+         Six = 6,
+         Seven = 7,
+         Height = 8,
+         Nine = 9,
+         Ten = 10,
+         Jack = 11,
+         Queen = 12,
+         King = 13
     }
 
-    public static class CardColor
+    public enum CardColor
     {
-        public const int Spades = 0;
-        public const int Hearts = 1;
-        public const int Diamonds = 2;
-        public const int Clubs = 3;
+        Spades = 0,
+        Hearts = 1,
+        Diamonds = 2,
+        Clubs = 3
     }
 }
