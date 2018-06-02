@@ -1,9 +1,7 @@
 ﻿using System;
-using CardGamesLibrary.Models.NetworkPacket;
 using CardGamesLibrary.Models.Card;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
-using Newtonsoft.Json;
 using CardGamesLibrary;
 
 namespace ServerApplication
@@ -19,7 +17,7 @@ namespace ServerApplication
             NetworkComms.AppendGlobalConnectionCloseHandler(ClientDisconnected);
             Connection.StartListening(ConnectionType.TCP, new System.Net.IPEndPoint(System.Net.IPAddress.Parse(IpAddress), port));
             Console.WriteLine("\nPress q to quit or any other key to continue.");
-            while(true)
+            while (true)
             {
                 if (Console.ReadKey(true).Key == ConsoleKey.Q) break;
             }
@@ -39,25 +37,15 @@ namespace ServerApplication
                 this.pool.AddConnection(connection);
                 if (this.pool.GetSize() == Pool.MAX_SIZE)
                 {
-                    // Game game = new Game(this.pool);
-                    int position = 0;
-                    while (position < Pool.MAX_SIZE)
-                    {
-                        Console.WriteLine("sending card to client number: " + position);
-                        Connection connection2 = this.pool.getConnection(position);
-                        Console.WriteLine(connection2.ToString());
-                        CardModel card = new CardModel() { Rank = CardRank.Ten, Color = CardColor.Diamonds };
-                        Console.WriteLine("card: " + card.ToString());
-                        connection2.SendObject(NetworkPacketHeader.SEND_CARDS, Serialization.Serialize(card));
-                        position++;
-                    }
+                    Game game = new Game(this.pool);
+                    game.Start();
                 }
             }
         }
 
         void ClientDisconnected(Connection connection)
         {
-            Console.WriteLine("Client diconnected : " + connection.ToString());
+            Console.WriteLine("Client disconnected : " + connection.ToString());
             this.pool.RemoveConnection(connection);
         }
     }

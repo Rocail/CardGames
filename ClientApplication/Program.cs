@@ -6,6 +6,7 @@ using NetworkCommsDotNet.Connections.TCP;
 using CardGamesLibrary.Models.NetworkPacket;
 using CardGamesLibrary.Models.Card;
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace ClientApplication
 {
@@ -25,7 +26,7 @@ namespace ClientApplication
                 try
                 {
                     connection = TCPConnection.GetConnection(connInfo);
-                    connection.AppendIncomingPacketHandler<string>(NetworkPacketHeader.SEND_CARD, getCardFromServer);
+                    connection.AppendIncomingPacketHandler<string>(NetworkPacketHeader.SEND_CARDS, getCardsFromServer);
                     
                 }
                 catch (Exception exception)
@@ -54,16 +55,18 @@ namespace ClientApplication
             connection.CloseConnection(false);
         }
 
-        public static void printMessage()
-        {
-
-        }
-
-        public static void getCardFromServer(PacketHeader header, Connection connection, string json) {
-            CardModel card = JsonConvert.DeserializeObject<CardModel>(json);
-            Console.WriteLine("Recieved card from : " + connection.ToString());
+        public static void getCardsFromServer(PacketHeader header, Connection connection, string json) {
+            Console.WriteLine(json);
+            ArrayList cards = new ArrayList();
+            cards.AddRange(JsonConvert.DeserializeObject<CardModel[]>(json));
+            Console.WriteLine("Recieved cards from : " + connection.ToString());
             Console.WriteLine("header : " + header.ToString());
-            Console.WriteLine("card : " + card.ToString());
+            Console.WriteLine("cards : ");
+            foreach (CardModel card in cards)
+            {
+                Console.WriteLine(card.ToString());
+            }
+            Console.WriteLine("Got " + cards.Count + " cards");
         }
     }
 }

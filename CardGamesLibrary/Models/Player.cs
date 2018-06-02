@@ -8,7 +8,12 @@ namespace CardGamesLibrary.Models.Player
     {
         // public List<CardModel> cards;     // CardModel
         public PlayerRank Rank { get; set; }
-        public int Number { get; set; }                 // PlayerPosition
+        public int Number { get; set; }
+
+        public override string ToString()
+        {
+            return "Player number " + Number + ", rank " + Rank;
+        }
     }
 
     public enum PlayerRank
