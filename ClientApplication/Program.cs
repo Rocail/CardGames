@@ -7,6 +7,7 @@ using CardGamesLibrary.Models.NetworkPacket;
 using CardGamesLibrary.Models.Card;
 using Newtonsoft.Json;
 using System.Collections;
+using CardGamesLibrary;
 
 namespace ClientApplication
 {
@@ -58,7 +59,7 @@ namespace ClientApplication
         public static void getCardsFromServer(PacketHeader header, Connection connection, string json) {
             Console.WriteLine(json);
             ArrayList cards = new ArrayList();
-            cards.AddRange(JsonConvert.DeserializeObject<CardModel[]>(json));
+            cards.AddRange(Serialization.Deserialize<CardModel[]>(json));
             Console.WriteLine("Recieved cards from : " + connection.ToString());
             Console.WriteLine("header : " + header.ToString());
             Console.WriteLine("cards : ");
@@ -67,6 +68,7 @@ namespace ClientApplication
                 Console.WriteLine(card.ToString());
             }
             Console.WriteLine("Got " + cards.Count + " cards");
+            Console.WriteLine(cards.GetType() == typeof(ArrayList));
         }
     }
 }

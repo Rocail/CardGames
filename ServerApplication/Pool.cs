@@ -14,7 +14,7 @@ namespace ServerApplication
     public class Pool
     {
         private readonly List<Connection> connections = new List<Connection>();
-        public const int MAX_SIZE = 1;
+        public const int MAX_SIZE = 4;
 
         public int AddConnection(Connection connection)
         {

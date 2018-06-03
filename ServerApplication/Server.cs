@@ -3,12 +3,14 @@ using CardGamesLibrary.Models.Card;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using CardGamesLibrary;
+using CardGamesLibrary.Models.NetworkPacket;
 
 namespace ServerApplication
 {
     class Server
     {
         private Pool pool = new Pool();
+        private Game game = null;
 
         public Server(string IpAddress, int port)
         {
@@ -21,32 +23,54 @@ namespace ServerApplication
             {
                 if (Console.ReadKey(true).Key == ConsoleKey.Q) break;
             }
-
             NetworkComms.Shutdown();
         }
 
         void ClientConnected(Connection connection)
         {
-            if (this.pool.GetSize() == Pool.MAX_SIZE)
+            if (pool == null)
             {
                 connection.CloseConnection(false);
             }
             else
             {
                 Console.WriteLine("Client connected : " + connection.ToString());
-                this.pool.AddConnection(connection);
-                if (this.pool.GetSize() == Pool.MAX_SIZE)
+                connection.AppendIncomingPacketHandler<string>(NetworkPacketHeader.SEND_CARDS, GetCardsFromClient);
+                
+                pool.AddConnection(connection);
+                if (pool.GetSize() == Pool.MAX_SIZE)
                 {
-                    Game game = new Game(this.pool);
+                    game = new Game(pool);
+                    pool = null;
                     game.Start();
                 }
             }
         }
 
+        private void GetCardsFromClient(PacketHeader packetHeader, Connection connection, string incomingObject)
+        {
+            if (this.game != null)
+            {
+
+            }
+        }
+
         void ClientDisconnected(Connection connection)
         {
-            Console.WriteLine("Client disconnected : " + connection.ToString());
-            this.pool.RemoveConnection(connection);
+            if (pool != null)
+            {
+                Console.WriteLine("Client disconnected : " + connection.ToString());
+                try
+                {
+                    pool.RemoveConnection(connection);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failed to handle client disconnexion properly");
+                    NetworkComms.Shutdown();
+                    throw e;
+                }
+            }
         }
     }
 }

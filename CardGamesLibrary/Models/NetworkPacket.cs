@@ -11,6 +11,7 @@ namespace CardGamesLibrary.Models.NetworkPacket
         public const string ROUND_START = "ROUND_START";
         public const string SEND_CARDS = "SEND_CARDS";
         public const string CARDS_PLAYED = "CARDS_PLAYED";
+        public const string END_OF_TURN = "END_OF_TURN";
         public const string END = "END";
     }
 }

@@ -53,7 +53,7 @@
     <Compile Include="GameObjects\ModelManagers\CardManager.cs" />
     <Compile Include="GameObjects\Game.cs" />
     <Compile Include="GameObjects\ModelManagers\PlayerManager.cs" />
-    <Compile Include="Networking.cs" />
+    <Compile Include="GameObjects\ModelManagers\RoundManager.cs" />
     <Compile Include="Pool.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

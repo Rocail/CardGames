@@ -13,13 +13,13 @@ namespace ServerApplication
     public class Game
     {
         ArrayList Deck { get; set; }
-        ArrayList PlayerManagers { get; set; }
+        ArrayList Players { get; set; }
+        ArrayList RoundManagers { get; set; }
 
         public Game(Pool pool)
         {
-            PlayerManagers = GeneratePlayerManagers(pool);
+            Players = GeneratePlayerManagers(pool);
             Deck = GenerateDeck();
-            InitiateConnectionHandlers();
         }
 
         ArrayList GeneratePlayerManagers(Pool pool)
@@ -54,16 +54,7 @@ namespace ServerApplication
             return deck;
         }
 
-        public bool InitiateConnectionHandlers()
-        {
-            foreach (PlayerManager playerManager in PlayerManagers)
-            {
-                playerManager.Connection.AppendIncomingPacketHandler<string>(NetworkPacketHeader.SEND_CARDS, GetCardsFromClient);
-            }
-            return true;
-        }
-
-        private void GetCardsFromClient(PacketHeader packetHeader, Connection connection, string incomingObject)
+        private void GetCardsFromClient(PacketHeader packetHeader, Connection connection, string json)
         {
             
         }
@@ -81,7 +72,8 @@ namespace ServerApplication
                 {
                     CardManagers.Add(new CardManager { Card = (CardModel)Deck[count] });
                 }
-                PlayerManager playerManager = (PlayerManager) PlayerManagers[playerNumber];
+                CardManagers.Sort();
+                PlayerManager playerManager = (PlayerManager) Players[playerNumber];
                 playerManager.Hand = new Hand { CardManagers = CardManagers };
             }
 
@@ -89,10 +81,54 @@ namespace ServerApplication
             return true;
         }
 
+        bool SwapCardsByRank()
+        {
+            ((PlayerManager)Players[0]).Player.Rank = PlayerRank.Asshole;
+            ((PlayerManager)Players[1]).Player.Rank = PlayerRank.ViceAsshole;
+            ((PlayerManager)Players[2]).Player.Rank = PlayerRank.VicePresident;
+            ((PlayerManager)Players[3]).Player.Rank = PlayerRank.President;
+            int[] playerRanksNumbers = new int[5] { -1, -1, -1, -1, -1 }; // position in the array = rank of the player, value = number of the player;
+            for (int playerNumber = 0; playerNumber < Players.Count; playerNumber ++)
+            {
+                PlayerManager player = (PlayerManager) Players[playerNumber];
+                if (player.Player.Rank != PlayerRank.Neutral);
+                playerRanksNumbers[(int) player.Player.Rank] = playerNumber;
+            }
+            if (Players.Count > 3)
+            {
+                SwapCards(2, (int) playerRanksNumbers[(int) PlayerRank.President], (int) playerRanksNumbers[(int) PlayerRank.Asshole]);
+                SwapCards(1, (int) playerRanksNumbers[(int) PlayerRank.VicePresident], (int) playerRanksNumbers[(int) PlayerRank.ViceAsshole]);
+            }
+            return true;
+        }
+
+        bool SwapCards(int numberOfCardsToSwap, int ElPresidenteNumber, int ElPendejoNumber)
+        {
+            PlayerManager ElPresidente = (PlayerManager) Players[ElPresidenteNumber];
+            PlayerManager ElPendejo = (PlayerManager) Players[ElPendejoNumber];
+            Console.WriteLine("Before :");
+            Console.WriteLine(ElPresidente);
+            Console.WriteLine(ElPendejo);
+            CardManager[] ElPresidenteCards = new CardManager[numberOfCardsToSwap];
+            CardManager[] ElPendejoCards = new CardManager[numberOfCardsToSwap];
+            ElPresidenteCards = (CardManager[]) ElPresidente.Hand.CardManagers.GetRange(ElPresidente.Hand.CardManagers.Count - 1 - numberOfCardsToSwap, numberOfCardsToSwap).ToArray(typeof(CardManager));
+            ElPendejoCards = (CardManager[]) ElPendejo.Hand.CardManagers.GetRange(0, numberOfCardsToSwap).ToArray(typeof(CardManager));
+            ElPendejo.Hand.CardManagers.AddRange(ElPresidenteCards);
+            ElPresidente.Hand.CardManagers.RemoveRange(ElPresidente.Hand.CardManagers.Count - 1 - numberOfCardsToSwap, numberOfCardsToSwap);
+            ElPresidente.Hand.CardManagers.AddRange(ElPendejoCards);
+            ElPendejo.Hand.CardManagers.RemoveRange(0, numberOfCardsToSwap);
+            ElPresidente.Hand.CardManagers.Sort();
+            ElPendejo.Hand.CardManagers.Sort();
+            Console.WriteLine("After :");
+            Console.WriteLine(ElPresidente);
+            Console.WriteLine(ElPendejo);
+            return true;
+        }
+
         bool SendCards()
         {
             Console.WriteLine("Sending cards ...");
-            foreach (PlayerManager playerManager in PlayerManagers)
+            foreach (PlayerManager playerManager in Players)
             {
                 Connection connection = playerManager.Connection;
                 try
@@ -114,7 +150,10 @@ namespace ServerApplication
         public void Start()
         {
             DispenseCards();
+            // SwapCardsByRank();
             SendCards();
+            
+            
         }
     }
 }
